@@ -1,0 +1,144 @@
+/* ==== Reset & variables ==== */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --clr-primary   : #0088cc;
+    --clr-bg        : #f9fafb;
+    --clr-text      : #212529;
+    --clr-muted     : #6c757d;
+    --radius        : .5rem;
+    --gap           : 1rem;
+    --font-base     : 16px;
+}
+
+/* ==== Base typography ==== */
+html { font-size: var(--font-base); }
+
+body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont,
+                 "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    background: var(--clr-bg);
+    color: var(--clr-text);
+    padding: var(--gap);
+}
+
+/* ==== Layout (Grid) ==== */
+.page {
+    display: grid;
+    gap: var(--gap);
+    grid-template-rows: auto 1fr auto;
+}
+
+header,
+main,
+footer {
+    background: #fff;
+    border-radius: var(--radius);
+    box-shadow: 0 2px 6px rgba(0,0,0,.05);
+    padding: var(--gap);
+}
+
+/* ==== Header ==== */
+.hero {
+    color: var(--clr-primary);
+    font-size: 1.75rem;
+    margin-bottom: .5rem;
+}
+
+/* ==== Logo line (Flex) ==== */
+.logo-line {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+@media (max-width: 480px) {
+    .logo-line { flex-direction: column; align-items:flex-start; }
+}
+
+/* ==== Lists ==== */
+ul, ol { margin-left: 1.5rem; }
+
+/* ==== Table wrapper (Flex) ==== */
+.table-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--gap);
+}
+.table-wrapper > table {
+    flex: 1 1 280px;
+    border-collapse: collapse;
+}
+
+/* ==== Table style ==== */
+table { width: 100%; }
+th, td {
+    padding: .5rem;
+    border: 1px solid #e2e6ea;
+    text-align: left;
+}
+th { background:#f1f3f5; }
+
+/* ==== Form (Grid) ==== */
+form#contactForm {
+    display: grid;
+    gap: var(--gap);
+}
+
+/* Mobile – вертикальная форма */
+form#contactForm label,
+form#contactForm input,
+form#contactForm textarea,
+form#contactForm button { width: 100%; }
+
+@media (min-width: 600px) {
+    form#contactForm {
+        grid-template-columns: max-content 1fr;
+        align-items: center;
+    }
+    form#contactForm label   { text-align:right; padding-right:.5rem; margin-bottom:0; }
+    form#contactForm > *    { grid-column: 1 / -1; } /* reset */
+    form#contactForm label,
+    form#contactForm input,
+    form#contactForm textarea,
+    form#contactForm button { grid-column: span 2; }
+
+    /* Перестраиваем в две колонки */
+    form#contactForm > label   { grid-column: 1; }
+    form#contactForm > input,
+    form#contactForm > textarea,
+    form#contactForm > button { grid-column: 2; }
+}
+
+/* ==== Buttons ==== */
+button {
+    background: var(--clr-primary);
+    color:#fff;
+    border:none;
+    padding:.6rem 1.2rem;
+    border-radius:var(--radius);
+    cursor:pointer;
+    font-size:1rem;
+}
+button:hover { opacity:.9; }
+
+/* ==== Images responsive ==== */
+img { max-width:100%; height:auto; }
+
+/* ==== Responsive root font size ==== */
+@media (max-width:360px)   { :root{--font-base:14px;} }
+@media (min-width:361px) and (max-width:768px){ :root{--font-base:15px;} }
+/* >768px оставляем 16px */
+
+/* ==== Footer ==== */
+footer {
+    text-align:center;
+    font-size:.875rem;
+    color:var(--clr-muted);
+}

@@ -223,6 +223,40 @@
         // 2. Потом научимся реагировать на события (клик, отправка формы).
         // 3. Затем будем читать значения полей и что-то с ними делать.
         // 4. Наконец, сделаем имитацию отправки на сервер.
+		
+		// === ШАГ 1: НАХОДИМ ЭЛЕМЕНТЫ НА СТРАНИЦЕ ===
+		// Есть несколько способов, начнем с самых основных.
+
+		// 1. getElementById - получаем элемент по его id (самый прямой способ)
+		const formElement = document.getElementById('telegramForm');
+		const firstNameInput = document.getElementById('firstName');
+		const submitButton = document.getElementById('submitBtn');
+		const statusMessageDiv = document.getElementById('statusMessage');
+
+		// 2. querySelector - мощный метод, находит первый элемент по CSS-селектору
+		const lastNameInput = document.querySelector('#lastName'); // # означает id
+
+		// Выведем найденные элементы в консоль, чтобы убедиться, что всё работает
+		console.log("Наша форма:", formElement);
+		console.log("Поле имени:", firstNameInput);
+		console.log("Кнопка отправки:", submitButton);
+
+		// === ШАГ 2: ЧИТАЕМ И ЗАПИСЫВАЕМ ЗНАЧЕНИЯ ===
+		// Давайте заполним поле имени по умолчанию (чисто для примера)
+		// firstNameInput.value = "Александр"; // Раскомментируй эту строку, убрав // вначале
+		// После этого обнови страницу и увидишь, что поле "Имя" будет заполнено.
+
+		// Проверим, что сейчас в этом поле (должно быть пусто)
+		console.log("Сейчас в поле имени значение:", firstNameInput.value);
+
+		// === ШАГ 3: РЕАГИРУЕМ НА ПРОСТОЕ СОБЫТИЕ ===
+		// Добавим реакцию на клик по кнопке (пока просто сообщение в консоль)
+		submitButton.addEventListener('click', function(event) {
+			// event.preventDefault(); // Пока закомментируем - позволим форме отправляться
+			console.log("Кнопка была нажата! Проверим данные...");
+			console.log("Имя:", firstNameInput.value);
+			console.log("Фамилия:", lastNameInput.value);
+		});
     </script>
 </body>
 </html>

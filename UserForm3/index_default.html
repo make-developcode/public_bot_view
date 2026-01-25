@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MiniApp‑demo</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="page">
+    <!-- Header -->
+    <header>
+        <h1 id="mainTitle" class="hero">Привет, мир!</h1>
+    </header>
+
+    <!-- Main content -->
+    <main>
+        <p>Это мой первый <strong>HTML‑проект</strong>. Он уже содержит заголовок и абзац.</p>
+        <hr>
+
+        <!-- Lists -->
+        <ul>
+            <li>Пункт A</li>
+            <li>Пункт B</li>
+        </ul>
+
+        <ol start="3">
+            <li>Третий пункт</li>
+            <li>Четвёртый пункт</li>
+        </ol>
+
+        <!-- Logo line -->
+        <p class="logo-line">
+			<a href="https://mysite.org" target="_blank">MySite</a> —
+			<img src="./image/logo.png" alt="my pretty site logo" width="80">
+        </p>
+
+        <!-- Table -->
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr><th>Товар</th><th>Цена</th><th>В наличии</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Кофе</td><td>150 ₽</td><td>Да</td></tr>
+                    <tr><td>Чай</td><td>120 ₽</td><td>Нет</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Form -->
+        <form id="contactForm" action="#" method="POST">
+            <label for="name">Имя:</label>
+            <input type="text" id="name" name="name"
+                   placeholder="Ваше имя" required>
+
+            <label for="email">E‑mail:</label>
+            <input type="email" id="email" name="email"
+                   placeholder="example@domain.com">
+
+            <label for="msg">Сообщение:</label>
+            <textarea id="msg" name="message" rows="4"></textarea>
+
+            <button type="submit">Отправить</button>
+        </form>
+		
+		<!--script src="app.js"></script-->
+		<script> 
+			//добавление обработчика событий к определённому элементу DOM
+			document.addEventListener('DOMContentLoaded', () => {
+				const form = document.getElementById('contactForm');
+				//e – это объект события (часто называют event).
+				form.addEventListener('submit', e => {
+					e.preventDefault();
+					//считать значение полей
+					const data = {
+						name: form.elements.name.value,
+						email: form.elements.email.value,
+						message: form.elements.message.value
+					};
+					// Простейшая валидация
+					if (!data.name || !data.email || !data.message) {
+						alert('Заполните все поля');
+						return;
+					}
+					// 5. Если приложение запущено в Telegram – используем его API,
+					//    иначе делаем обычный HTTP‑запрос к вашему серверу.
+					if (window.Telegram && Telegram.WebApp) {
+						Telegram.WebApp.sendData(JSON.stringify(data));
+						Telegram.WebApp.showAlert('Данные отправлены боту');
+					} else {
+						console.log('Не в Telegram, выводим в консоль:', data);
+						// Отправляем данные на сервер (или в бот)
+						/*
+						try {
+							const response = await fetch('/api/contact', {   // ваш бекенд
+								method: 'POST',
+								headers: {'Content-Type': 'application/json'},
+								body: JSON.stringify(data)
+							});
+
+							const result = await response.json();
+							if (result.ok) {
+								alert('Сообщение отправлено!');
+								form.reset();   // очистить форму
+							} else {
+								alert('Ошибка сервера');
+							}
+						} catch (err) {
+							console.error(err);
+							alert('Не удалось отправить запрос');
+						}
+						*/
+					}
+				});
+				
+				
+				
+			});
+		</script>
+    </main>
+
+    <!-- Footer -->
+    <footer>© 2026 MiniApp Demo</footer>
+</div>
+
+</body>
+</html>
