@@ -65,11 +65,42 @@
             <button type="submit">Отправить</button>
         </form>
 		
+		<!-- Индикатор загрузки -->
+		<div id="loader" class="loader hidden"></div>
+		
 		<!--script src="app.js"></script-->
 		<script> 
 			//добавление обработчика событий к определённому элементу DOM
 			document.addEventListener('DOMContentLoaded', () => {
-				const form = document.getElementById('contactForm');
+				const form   = document.getElementById('contactForm');
+				const loader = document.getElementById('loader');
+				const btn	 = form.querySelector('button[type="submit"]')		
+				
+				// Функция, показывающая индикатор
+				const showLoader = () => {
+					loader.classList.remove('hidden');
+					btn.disabled = true;
+					btn.textContent = 'Отправка...';
+				};
+				// Функция, скрывающая индикатор
+				const hideLoader = () => {
+					loader.classList.add('hidden');
+					btn.disabled = false;
+					btn.textContent = 'Отправить'
+				};
+
+				const simulateApiCall = async (dur = 2000) => {
+					console.log('Начинаем имитацию загрузки...');
+					showLoader();
+					try {
+						await new Promise(r => setTimeout(r, dur));
+						console.log('Имитация загрузки завершена!');
+					} finally {
+						hideLoader();
+					}
+				};
+				
+				
 				//e – это объект события (часто называют event).
 				form.addEventListener('submit', e => {
 					e.preventDefault();
@@ -84,6 +115,8 @@
 						alert('Заполните все поля');
 						return;
 					}
+
+					// «задержка» 2 секунды так как никакой отправки нет - тест бекенда
 					// 5. Если приложение запущено в Telegram – используем его API,
 					//    иначе делаем обычный HTTP‑запрос к вашему серверу.
 					if (window.Telegram && Telegram.WebApp) {
@@ -91,8 +124,10 @@
 						Telegram.WebApp.showAlert('Данные отправлены боту');
 					} else {
 						console.log('Не в Telegram, выводим в консоль:', data);
+						simulateApiCall();
 						// Отправляем данные на сервер (или в бот)
 						/*
+						showLoader();
 						try {
 							const response = await fetch('/api/contact', {   // ваш бекенд
 								method: 'POST',
@@ -110,6 +145,9 @@
 						} catch (err) {
 							console.error(err);
 							alert('Не удалось отправить запрос');
+						} finally {
+							// ----- 3. Скрыть индикатор в любом случае -------------------------------
+							hideLoader();
 						}
 						*/
 					}
