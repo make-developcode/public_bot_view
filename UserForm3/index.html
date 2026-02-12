@@ -30,7 +30,7 @@
                         <th>В наличии</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="table-body">
                     <!-- строки будут вставлены динамически -->
                 </tbody>
             </table>
@@ -58,19 +58,36 @@
 		
 		<!--script src="app.js"></script-->
 		<script> 
+		// Адрес API — тот же домен, что и статика, но порт 8001
+		const API_URL = 'https://sharp-walls-fall.loca.lt/api/table-data';
+		async function loadTableData() {
+			try {
+				console.log('Запрос к API:', API_URL);
+				const response = await fetch(API_URL);
+				console.log('Статус ответа:', response.status);
+				const data = await response.json(); // ожидаем объект с полем products
+				console.log('Данные от API:', data);
+				const tbody = document.getElementById('table-body');
+				if (!tbody) {
+					console.error('❌ Элемент <tbody id="table-body"> не найден в HTML');
+					return;
+				}
+				tbody.innerHTML = ''; // очищаем
+				data.products.forEach(item => {
+					const row = `<tr>
+						<td>${item.name}</td>
+						<td>${item.price}</td>
+						<td>${item.stock}</td>
+					</tr>`;
+					tbody.insertAdjacentHTML('beforeend', row);
+				});
+			} catch (error) {
+				console.error('Ошибка загрузки таблицы:', error);
+			}
+		}
 		document.addEventListener('DOMContentLoaded', () => {
          	// --- ДИНАМИЧЕСКАЯ ЗАГРУЗКА ТАБЛИЦЫ ---
-            const tbody = document.querySelector('.table-wrapper tbody');
-            const products = [
-                { name: 'Кофе_', price: '150 ₽ _', inStock: 'Да_' },
-                { name: 'Чай_', price: '120 ₽ _', inStock: 'Нет_' }
-            ];
-            products.forEach(item => {
-                const row = tbody.insertRow();
-                row.insertCell().textContent = item.name;
-                row.insertCell().textContent = item.price;
-                row.insertCell().textContent = item.inStock;
-            });
+			loadTableData();
 
 			//добавление обработчика событий к определённому элементу DOM
 			const form   = document.getElementById('contactForm');
