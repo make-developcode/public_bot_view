@@ -2,8 +2,9 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>MiniApp‑demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=yes">
+    <title>MiniApp</title>
+	<script src="https://telegram.org/js/telegram-web-app.js?59"></script>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -11,44 +12,43 @@
 <div class="page">
     <!-- Header -->
     <header>
-        <h1 id="mainTitle" class="hero">Привет, мир!</h1>
+		<h1 id="mainTitle" class="hero">Отправка заявки</h1>
+        <img src="./image/logo.jpg" alt="Site Logo" class="wide-logo">
     </header>
 
     <!-- Main content -->
     <main>
-        <p>Это мой первый <strong>HTML‑проект</strong>. Он уже содержит заголовок и абзац.</p>
+        <p>Форма <strong>заказа</strong> и обратной связи</p>
         <hr>
-        <!-- Logo line -->
-        <p class="logo-line">
-			<a href="https://mysite.org" target="_blank">MySite</a> —
-			<img src="./image/logo.png" alt="my pretty site logo" width="80">
-        </p>
-
-        <!-- Table -->
+		<!-- Table -->
         <div class="table-wrapper">
             <table>
                 <thead>
-                    <tr><th>Товар</th><th>Цена</th><th>В наличии</th></tr>
+                    <tr>
+                        <th>Товар</th>
+                        <th>Цена</th>
+                        <th>В наличии</th>
+                    </tr>
                 </thead>
                 <tbody>
-                    <tr><td>Кофе</td><td>150 ₽</td><td>Да</td></tr>
-                    <tr><td>Чай</td><td>120 ₽</td><td>Нет</td></tr>
+                    <!-- строки будут вставлены динамически -->
                 </tbody>
             </table>
         </div>
 
         <!-- Form -->
         <form id="contactForm" action="#" method="POST">
-            <label for="name">Имя:</label>
+            <label for="name">Имя <span style="color:#d32f2f;">*</span></label>
             <input type="text" id="name" name="name"
                    placeholder="Ваше имя" required>
 
-            <label for="email">E‑mail:</label>
+            <label for="email">E‑mail <span style="color:#d32f2f;">*</span></label>
             <input type="email" id="email" name="email"
-                   placeholder="example@domain.com">
+                   placeholder="example@domain.com" required>
 
-            <label for="msg">Сообщение:</label>
-            <textarea id="msg" name="message" rows="4"></textarea>
+            <label for="msg">Сообщение <span style="color:#d32f2f;">*</span></label>
+            <textarea id="msg" name="message" rows="4" 
+                      placeholder="Введите текст сообщения..." required></textarea>
 
             <button type="submit">Отправить</button>
         </form>
@@ -57,9 +57,21 @@
 		<div id="loader" class="loader hidden"></div>
 		
 		<!--script src="app.js"></script-->
-		<script src="https://telegram.org/js/telegram-web-app.js?59"></script>
 		<script> 
 		document.addEventListener('DOMContentLoaded', () => {
+         	// --- ДИНАМИЧЕСКАЯ ЗАГРУЗКА ТАБЛИЦЫ ---
+            const tbody = document.querySelector('.table-wrapper tbody');
+            const products = [
+                { name: 'Кофе_', price: '150 ₽ _', inStock: 'Да_' },
+                { name: 'Чай_', price: '120 ₽ _', inStock: 'Нет_' }
+            ];
+            products.forEach(item => {
+                const row = tbody.insertRow();
+                row.insertCell().textContent = item.name;
+                row.insertCell().textContent = item.price;
+                row.insertCell().textContent = item.inStock;
+            });
+
 			//добавление обработчика событий к определённому элементу DOM
 			const form   = document.getElementById('contactForm');
 			const loader = document.getElementById('loader');
@@ -71,11 +83,13 @@
 				isTelegramWebApp = true;				
 				Telegram.WebApp.ready();	// Уведомляем Telegram, что мы готовы работать с его API
 				Telegram.WebApp.expand(); // Развернуть на весь экран
-				Telegram.WebApp.enableClosingConfirmation(); // Включить подтверждение закрытия
-				
+				Telegram.WebApp.enableClosingConfirmation(); // Включить подтверждение закрытия				
+				// console.log('initDataUnsafe:', Telegram.WebApp.initDataUnsafe);
 				const user = Telegram.WebApp.initDataUnsafe.user;
+				console.log('! Вывод json user:', user);
 				if (user && user.first_name) {
-				     form.elements.name.value = user.first_name;
+					console.log('Загрузка first_name пользователя...');
+				    form.elements.name.value = user.first_name;
 				}
 			}
 
@@ -91,32 +105,26 @@
 				btn.disabled = false;
 				btn.textContent = 'Отправить'
 			};
-			const simulateApiCall = async (dur = 2000) => {
-				console.log('Начинаем имитацию загрузки...');
-				showLoader();
-				try {
-					await new Promise(r => setTimeout(r, dur));
-					console.log('Имитация загрузки завершена!');
-				} finally {
-					hideLoader();
-				}
-			};
 
 			// Универсальная функция "отправки" (для обоих режимов)
 			const submitFormData = async (data) => {
 				console.log('Начинаем отправку данных...');
 				showLoader();
-				
 				try {
 					if (isTelegramWebApp) {
 						console.log('Отправка через Telegram WebApp API:', data);
 						Telegram.WebApp.sendData(JSON.stringify(data));
-						Telegram.WebApp.showAlert('Данные отправлены!');
+						// Даём 2 секунды на показ уведомления, потом закрываем						
+						Telegram.WebApp.showAlert('Данные будут отправлены!');
+						setTimeout(() => {
+							Telegram.WebApp.close();
+						}, 2000);
 						// Telegram.WebApp.close(); // Опционально: закрыть мини-апп
 					} else {
 						// Режим браузера: имитируем запрос или делаем реальный fetch
 						console.log('Режим отладки. Данные для отправки:', data);
-						await new Promise(r => setTimeout(r, 2000)); // Имитация задержки сети
+						await new Promise(resolve => setTimeout(resolve, 1800)); // имитация сети
+                        alert('✅ Данные успешно отправлены (симуляция)');
 						// РЕАЛЬНАЯ ОТПРАВКА НА ВАШ СЕРВЕР (для отладки):
 						// const response = await fetch('https://ваш-сервер.com/api', {
 						//     method: 'POST',
@@ -144,9 +152,9 @@
 				e.preventDefault();
 				//считать значение полей
 				const data = {
-					name: form.elements.name.value,
-					email: form.elements.email.value,
-					message: form.elements.message.value
+					name: form.elements.name.value.trim(),
+					email: form.elements.email.value.trim(),
+					message: form.elements.message.value.trim()
 				};
 				// Простейшая валидация
 				if (!data.name || !data.email || !data.message) {
@@ -160,7 +168,7 @@
     </main>
 
     <!-- Footer -->
-    <footer>© 2026 MiniApp Demo</footer>
+    <footer>© 2026 MiniApp MakeDeveloper</footer>
 </div>
 
 </body>
