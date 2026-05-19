@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=yes">
     <title>MiniApp</title>
-	<script src="https://telegram.org/js/telegram-web-app.js?59"></script>
+	<!--script src="https://telegram.org/js/telegram-web-app.js?59"></script-->
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -50,138 +50,18 @@
             <textarea id="msg" name="message" rows="4" 
                       placeholder="Введите текст сообщения..." required></textarea>
 
+            <label for="product-select">Товар <span style="color:#d32f2f;">*</span></label>
+            <select id="product-select" required>
+                <option value="">Загрузка...</option>
+            </select>
             <button type="submit">Отправить</button>
         </form>
 		
 		<!-- Индикатор загрузки -->
 		<div id="loader" class="loader hidden"></div>
+		<!-- Скрипт для приложения -->
+		<script src="js/app.js"></script>
 		
-		<!--script src="app.js"></script-->
-		<script> 
-		// Адрес API — тот же домен, что и статика, но порт 8001
-		const API_URL = 'https://bot-step2.onrender.com/api/table-data';
-		async function loadTableData() {
-			try {
-				console.log('Запрос к API:', API_URL);
-				const response = await fetch(API_URL);
-				console.log('Статус ответа:', response.status);
-				const data = await response.json(); // ожидаем объект с полем products
-				console.log('Данные от API:', data);
-				const tbody = document.getElementById('table-body');
-				if (!tbody) {
-					console.error('❌ Элемент <tbody id="table-body"> не найден в HTML');
-					return;
-				}
-				tbody.innerHTML = ''; // очищаем
-				data.products.forEach(item => {
-					const row = `<tr>
-						<td>${item.name}</td>
-						<td>${item.price}</td>
-						<td>${item.stock}</td>
-					</tr>`;
-					tbody.insertAdjacentHTML('beforeend', row);
-				});
-			} catch (error) {
-				console.error('Ошибка загрузки таблицы:', error);
-			}
-		}
-		document.addEventListener('DOMContentLoaded', () => {
-         	// --- ДИНАМИЧЕСКАЯ ЗАГРУЗКА ТАБЛИЦЫ ---
-			loadTableData();
-
-			//добавление обработчика событий к определённому элементу DOM
-			const form   = document.getElementById('contactForm');
-			const loader = document.getElementById('loader');
-			const btn	 = form.querySelector('button[type="submit"]')		
-			let isTelegramWebApp = false; // Флаг для определения среды выполнения
-
-			if (window.Telegram && window.Telegram.WebApp) {
-				console.log('Mini App запущен в Telegram');
-				isTelegramWebApp = true;				
-				Telegram.WebApp.ready();	// Уведомляем Telegram, что мы готовы работать с его API
-				Telegram.WebApp.expand(); // Развернуть на весь экран
-				Telegram.WebApp.enableClosingConfirmation(); // Включить подтверждение закрытия				
-				// console.log('initDataUnsafe:', Telegram.WebApp.initDataUnsafe);
-				const user = Telegram.WebApp.initDataUnsafe.user;
-				console.log('! Вывод json user:', user);
-				if (user && user.first_name) {
-					console.log('Загрузка first_name пользователя...');
-				    form.elements.name.value = user.first_name;
-				}
-			}
-
-			// Функция, показывающая индикатор
-			const showLoader = () => {
-				loader.classList.remove('hidden');
-				btn.disabled = true;
-				btn.textContent = 'Симуляция отправки...';
-			};
-			// Функция, скрывающая индикатор
-			const hideLoader = () => {
-				loader.classList.add('hidden');
-				btn.disabled = false;
-				btn.textContent = 'Отправить'
-			};
-
-			// Универсальная функция "отправки" (для обоих режимов)
-			const submitFormData = async (data) => {
-				console.log('Начинаем отправку данных...');
-				showLoader();
-				try {
-					if (isTelegramWebApp) {
-						console.log('Отправка через Telegram WebApp API:', data);
-						Telegram.WebApp.sendData(JSON.stringify(data));
-						// Даём 2 секунды на показ уведомления, потом закрываем						
-						Telegram.WebApp.showAlert('Данные будут отправлены!');
-						setTimeout(() => {
-							Telegram.WebApp.close();
-						}, 2000);
-						// Telegram.WebApp.close(); // Опционально: закрыть мини-апп
-					} else {
-						// Режим браузера: имитируем запрос или делаем реальный fetch
-						console.log('Режим отладки. Данные для отправки:', data);
-						await new Promise(resolve => setTimeout(resolve, 1800)); // имитация сети
-                        alert('✅ Данные успешно отправлены (симуляция)');
-						// РЕАЛЬНАЯ ОТПРАВКА НА ВАШ СЕРВЕР (для отладки):
-						// const response = await fetch('https://ваш-сервер.com/api', {
-						//     method: 'POST',
-						//     headers: {'Content-Type': 'application/json'},
-						//     body: JSON.stringify(data)
-						// });
-						// const result = await response.json();
-						// console.log('Ответ сервера:', result);
-					}
-					console.log('Отправка завершена успешно!');
-				} catch (error) {
-					console.error('Ошибка при отправке:', error);
-					if (isTelegramWebApp) {
-						Telegram.WebApp.showAlert('Произошла ошибка при отправке');
-					} else {
-						alert('Произошла ошибка при отправке (см. консоль)');
-					}
-				} finally {
-					// Всегда скрываем индикатор, даже если была ошибка
-					hideLoader();
-				}
-			};
-			//e – это объект события (часто называют event).
-			form.addEventListener('submit', async e => {
-				e.preventDefault();
-				//считать значение полей
-				const data = {
-					name: form.elements.name.value.trim(),
-					email: form.elements.email.value.trim(),
-					message: form.elements.message.value.trim()
-				};
-				// Простейшая валидация
-				if (!data.name || !data.email || !data.message) {
-					alert('Заполните все поля');
-					return;
-				}
-				await submitFormData(data);
-			});
-		});
-		</script>
     </main>
 
     <!-- Footer -->
