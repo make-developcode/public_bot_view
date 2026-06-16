@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ-панель кофейни</title>
+    <link rel="stylesheet" href="css/styleadmin.css">
+</head>
+<body>
+    <div class="container">
+        <div id="login-panel" class="form-section">
+            <h2>Вход для администратора</h2>
+            <p>Введите токен администратора (выдается владельцем системы).</p>
+            <input type="password" id="token-input" placeholder="Токен">
+            <button id="login-btn">Войти</button>
+            <div id="login-error" class="error hidden"></div>
+        </div>
+
+        <div id="admin-panel" class="hidden">
+            <div class="nav">
+                <button id="tab-products" class="active">Товары</button>
+                <button id="tab-orders">Заказы</button>
+                <button id="logout-btn" class="logout">Выйти</button>
+            </div>
+
+            <!-- Раздел товаров -->
+            <div id="products-section">
+                <div class="form-section">
+                    <h3>Добавить товар</h3>
+                    <div class="flex-row">
+                        <input type="text" id="prod-name" placeholder="Название">
+                        <input type="text" id="prod-price" placeholder="Цена (напр. 150 ₽)">
+                        <input type="text" id="prod-stock" placeholder="Наличие (Да/Нет)">
+                        <button id="add-product-btn">Добавить</button>
+                    </div>
+                    <div id="product-msg" class="hidden"></div>
+                </div>
+
+                <h3>Список товаров</h3>
+                <table id="products-table">
+                    <thead><tr><th>ID</th><th>Название</th><th>Цена</th><th>Наличие</th><th>Действия</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <!-- Раздел заказов -->
+            <div id="orders-section" class="hidden">
+                <h3>Все заказы</h3>
+                <table id="orders-table">
+                    <thead><tr><th>ID</th><th>Клиент</th><th>Email</th><th>Товар</th><th>Кол-во</th><th>Статус</th><th>Действия</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/admin.js"></script>
+</body>
+</html>

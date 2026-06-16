@@ -1,0 +1,24 @@
+<style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; background: #f4f4f4; color: #333; }
+    .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+    .hidden { display: none !important; }
+    .error { color: #d32f2f; background: #ffebee; padding: 10px; border-radius: 4px; margin: 10px 0; }
+    .success { color: #2e7d32; background: #e8f5e9; padding: 10px; border-radius: 4px; margin: 10px 0; }
+    button { cursor: pointer; padding: 8px 16px; border: none; border-radius: 4px; background: #6f4e37; color: white; font-size: 14px; }
+    button:hover { background: #5a3e2b; }
+    input, select, textarea { padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; width: 100%; margin-bottom: 10px; }
+    table { width: 100%; border-collapse: collapse; margin: 15px 0; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+    th { background: #6f4e37; color: white; }
+    tr:hover { background: #f9f9f9; }
+    .nav { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #6f4e37; }
+    .nav button { background: none; color: #6f4e37; border: none; padding: 10px 20px; font-weight: bold; border-radius: 0; }
+    .nav button.active { border-bottom: 3px solid #6f4e37; }
+    .form-section { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; }
+    .flex-row { display: flex; gap: 10px; align-items: center; }
+    .flex-row > * { flex: 1; }
+    .btn-small { padding: 4px 8px; font-size: 12px; }
+    .logout { background: #c62828; }
+    .logout:hover { background: #b71c1c; }
+</style>
