@@ -1,6 +1,3 @@
-
-// Адрес API — тот же домен, что и статика, но порт 8001
-//const API_BASE = 'https://bot-step2.onrender.com'
 /*
 GET /api/products – возвращает _products_cache_sb (обновляя кэш).
 POST /api/orders – принимает {product_id, user_name, user_email} и сохраняет в orders.
@@ -11,9 +8,7 @@ PUT /api/admin/products/{id} – обновление.
 DELETE /api/admin/products/{id} – удаление.
 */
 
-// Адрес API (для локальной отладки – http://localhost:8001, для продакшена – https://ваш-сервер.onrender.com)
-// const API_BASE = 'http://localhost:8001';   // Поменяйте при деплое
-const API_BASE = 'https://bot-step2.onrender.com'
+import { apiFetch, selectActiveServer, activeApiBase } from './api-clients.js';
 const API_PATHS = {
     products: '/api/products',
     orders: '/api/orders'
@@ -22,8 +17,9 @@ const API_PATHS = {
 // Загрузка таблицы товаров
 async function loadTableData() {
     try {
-        console.log('Запрос к API:', `${API_BASE}${API_PATHS.products}`);
-        const response = await fetch(`${API_BASE}${API_PATHS.products}`);
+        console.log('Запрос к API:', `${activeApiBase}${API_PATHS.products}`);
+        // const response = await fetch(`${API_BASE}${API_PATHS.products}`);
+        const response = await apiFetch(API_PATHS.products);
         console.log('Статус ответа:', response.status);
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const products = await response.json();
@@ -57,7 +53,7 @@ async function loadTableData() {
 
 // Отправка заказа
 async function submitOrder(productId, userName, userEmail, quantity = 1) {
-    const response = await fetch(`${API_BASE}${API_PATHS.orders}`, {
+    const response = await apiFetch(`${API_PATHS.orders}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -75,7 +71,9 @@ async function submitOrder(productId, userName, userEmail, quantity = 1) {
 }
 
 // Обработка формы
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    // Предварительная проверка (опционально)
+    await selectActiveServer();
     loadTableData();
 
     const form = document.getElementById('contactForm');

@@ -1,6 +1,6 @@
 // Конфигурация
-//const API_BASE = 'http://localhost:8001'; // замените на ваш Render URL при деплое
-const API_BASE = 'https://bot-step2.onrender.com'
+import { apiFetch, selectActiveServer, activeApiBase } from './api-clients.js';
+
 let authToken = localStorage.getItem('adminToken') || null;
 
 // Элементы DOM
@@ -40,7 +40,7 @@ loginBtn.addEventListener('click', async () => {
     }
     // Проверяем токен, запросив любую админскую конечную точку
     try {
-        const resp = await fetch(`${API_BASE}/api/admin/orders`, {
+        const resp = await apiFetch(`/api/admin/orders`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         if (resp.ok) {
@@ -110,7 +110,7 @@ function showProductMessage(msg, isError = false) {
 // --- Загрузка товаров ---
 async function loadProducts() {
     try {
-        const resp = await fetch(`${API_BASE}/api/products`);
+        const resp = await apiFetch(`/api/products`);
         if (!resp.ok) throw new Error('Ошибка загрузки');
         const products = await resp.json();
         renderProducts(products);
@@ -167,7 +167,7 @@ addProductBtn.addEventListener('click', async () => {
         return;
     }
     try {
-        const resp = await fetch(`${API_BASE}/api/admin/products`, {
+        const resp = await apiFetch(`/api/admin/products`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -192,7 +192,7 @@ addProductBtn.addEventListener('click', async () => {
 // --- Обновление товара ---
 async function updateProduct(id, data) {
     try {
-        const resp = await fetch(`${API_BASE}/api/admin/products/${id}`, {
+        const resp = await apiFetch(`/api/admin/products/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -214,7 +214,7 @@ async function updateProduct(id, data) {
 // --- Удаление товара ---
 async function deleteProduct(id) {
     try {
-        const resp = await fetch(`${API_BASE}/api/admin/products/${id}`, {
+        const resp = await apiFetch(`/api/admin/products/${id}`, {
             method: 'DELETE',
             headers: { 'Authorization': `Bearer ${authToken}` }
         });
@@ -232,7 +232,7 @@ async function deleteProduct(id) {
 // --- Загрузка заказов ---
 async function loadOrders() {
     try {
-        const resp = await fetch(`${API_BASE}/api/admin/orders`, {
+        const resp = await apiFetch(`/api/admin/orders`, {
             headers: { 'Authorization': `Bearer ${authToken}` }
         });
         if (!resp.ok) throw new Error('Ошибка загрузки');
@@ -281,7 +281,7 @@ function renderOrders(orders) {
 
 async function updateOrderStatus(orderId, status) {
     try {
-        const resp = await fetch(`${API_BASE}/api/admin/orders/${orderId}`, {
+        const resp = await apiFetch(`/api/admin/orders/${orderId}`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
@@ -309,7 +309,7 @@ function escapeHtml(text) {
 // Проверка токена при начальной загрузке
 async function checkTokenAndEnter() {
     try {
-        const resp = await fetch(`${API_BASE}/api/admin/orders`, {
+        const resp = await apiFetch(`/api/admin/orders`, {
             headers: { 'Authorization': `Bearer ${authToken}` }
         });
         if (resp.ok) {
