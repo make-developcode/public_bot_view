@@ -70,8 +70,28 @@ async function submitOrder(productId, userName, userEmail, quantity = 1) {
     return await response.json();
 }
 
+// Функция для инициализации VK Mini App
+async function initVkApp() {
+    console.log('initVkApp ...............');
+    if (window.vkBridge && typeof window.vkBridge.send === 'function') {
+        try {
+            await vkBridge.send('VKWebAppInit', {});
+            console.log('✅ VK App initialized');
+            return true;
+        } catch (err) {
+            console.error('❌ VK init error:', err);
+            return false;
+        }
+    } else {
+        console.warn('VK Bridge not available');
+        return false;
+    }
+}
+
 // Обработка формы
 document.addEventListener('DOMContentLoaded', async () => {
+    console.log('VK Bridge initialized ....');
+    const initialized = await initVkApp();
     // Предварительная проверка (опционально)
     await selectActiveServer();
     loadTableData();
