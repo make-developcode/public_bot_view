@@ -10,6 +10,7 @@ DELETE /api/admin/products/{id} – удаление.
 
 import { apiFetch, selectActiveServer, activeApiBase } from './api-clients.js';
 const API_PATHS = {
+    userConnect: '/api/user',
     products: '/api/products',
     orders: '/api/orders'
 };
@@ -88,10 +89,53 @@ async function initVkApp() {
     }
 }
 
+// Функция для получения данных пользователя VK
+async function getUserInfo() {
+    try {
+        const data = await vkBridge.send('VKWebAppGetUserInfo', {});
+        console.log('User info:', data);
+        const firstName = data.first_name || 'Гость';
+        // Обновляем заголовок
+        document.getElementById('mainTitle').textContent = `Привет, ${firstName}!`;
+        // Сохраняем данные глобально, если понадобятся позже
+        window.vkUser = data;
+        return data;
+    } catch (e) {
+        console.warn('Не удалось получить данные пользователя:', e);
+        document.getElementById('mainTitle').textContent = 'Добро пожаловать!';
+        return null;
+    }
+}
+
 // Обработка формы
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('VK Bridge initialized ....');
     const initialized = await initVkApp();
+    if (initialized) {
+        const UserInfo = await getUserInfo();
+        if (UserInfo) {
+            const userData = {
+                id: window.vkUser.id,
+                first_name: window.vkUser.first_name,
+                last_name: window.vkUser.last_name || "",
+                photo_200: window.vkUser.photo_200 || "",
+                photo_max_orig: window.vkUser.photo_max_orig || "",
+                platform: 'vk'
+            };
+            console.log('userData for initializing:', userData);
+            const response = await apiFetch(`${API_PATHS.userConnect}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(userData)
+            });
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.detail || 'Ошибка отправки');
+            }
+        }
+    } else {
+        document.getElementById('mainTitle').textContent = 'Добро пожаловать!';
+    }
     // Предварительная проверка (опционально)
     await selectActiveServer();
     loadTableData();
